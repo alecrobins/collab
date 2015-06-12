@@ -6,7 +6,7 @@ var Room = require('./room');
 var uuid = require('node-uuid');
 
 var people = {};
-var rooms = {"test1": "room1"};
+var rooms = {};
 var clients = [];
 
 // create a contiains function for arrays
@@ -25,6 +25,7 @@ Array.prototype.contains = function(k, callback) {
 
 app.use('/assets', express.static(__dirname + '/node_modules/'));
 app.use('/assets', express.static(__dirname + '/scripts/'));
+app.use('/assets', express.static(__dirname + '/bower_components'));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -43,6 +44,7 @@ io.on('connection', function(socket){
 
   // join a room
   socket.on("join", function(name){
+
     var roomID = null;
     
     people[socket.id] = {
@@ -53,12 +55,15 @@ io.on('connection', function(socket){
     io.sockets.emit("update", people[socket.id].name + "is online");
     io.sockets.emit("update-people", people);
     io.emit("roomList", {rooms: rooms});
-    clietns.push(socket); // populate the clients array with the socket object
+    clients.push(socket); // populate the clients array with the socket object
+
+    console.log(people);
 
   });
 
   // create a room
   socket.on("createRoom", function(name){
+    console.log(people);
     // check if the person has not already created a room
     if(people[socket.id].room == null){
         // create the room id
@@ -70,7 +75,7 @@ io.on('connection', function(socket){
 
         // update the list of rooms on the frontend
         socket.room = name;
-        client.join(client.room); // auto join creator to the room
+        socket.join(socket.room); // auto join creator to the room
         room.addPerson(socket.id); // add the person to the room object
         people[socket.id].room = id; // update the room key with the id of the created room
     }else{
