@@ -36,11 +36,6 @@
 					<button class="btn btn-default" id="login">log in</button>
 
 					<span id="yourID"><p><b>Your peerID is: </b></p></span>
-
-					<label for="videoID">video id: </label>
-					<input type="text" id="videoID" name="videoID" />
-					<button class="btn btn-default" id="videoIDBtn">Send Video Call</button>
-
 			</div>
 
 			<div class="container" id="roomContainer">
@@ -68,7 +63,6 @@
 	<div class="container room" style="margin-top: 20px">
 			<!-- Video area -->
 	    <div id="video-container">
-	      <video id="their-video" width="400px" height="300px" autoplay></video>
 	      <video id="my-video" width="100px" height="100px" muted="true" autoplay></video>
 	    </div>
 
@@ -77,7 +71,7 @@
 		</ul>
 		<input type="text" id="sendMsg" /><button type="button" class="btn btn-default" id="sendMessageBtn">Send</button>
 
-		<input type="text" id="sendVideoCallID" /><button class="btn btn-default" id="sendVideoCall">Send Video Call</button>
+		<button class="btn btn-success" id="sendVideoCall">Send Video Call</button>
 	</div>
 
 

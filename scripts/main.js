@@ -12,6 +12,9 @@ var peerID = "";
 
 var conn = {};
 
+// temp 
+var tempCount = 0;
+
 // globals
 var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
 
@@ -22,6 +25,7 @@ $(document).ready(function(){
 	// hide components when user is not logged in
 	$('#roomContainer').hide();
 	$('.room').hide();
+	$('#login').hide();
 
 	// User Events
 	$( "#createRoomBtn" ).click(function() {
@@ -39,7 +43,7 @@ $(document).ready(function(){
 		user.username = username;
 
 		// join on login
-		socket.emit('join', username);
+		socket.emit('join', username, peerID);
 
 		// show rooms / create room
 		$('#roomContainer').show();
@@ -53,14 +57,10 @@ $(document).ready(function(){
 		$('#sendMsg').val('');
 	});
 
-	$('#videoIDBtn').click(function(){
-		var _peerID = $('#videoID').val();
-		socket.emit('sendVideoID', _peerID);
-	});
-
 	$('#sendVideoCall').click(function(){
-		var _otherID = $('#sendVideoCallID').val();
-		setupVideo(_otherID);
+		// setupVideo(_otherID);
+		// gather the ids of all others in the group
+		socket.emit('getPeerIDs', room.roomID);
 	});
 
 });
@@ -142,17 +142,23 @@ socket.on('recieveVideoID', function(_id){
 			conn.send('hi');
 		});
 	}
-
 });
 
-socket.on('recieveVideoCall', function(_id){
-	if(_id != peerID){
-		console.log("received video id");
-		conn = peer.connect(_id);
-		conn.on('open', function(){
-			conn.send('hi');
-		});
-	}
+
+socket.on('connectVideoCall', function(person){
+	console.log("received video id");
+	console.log(person);
+	setupVideo(person.peerID);
+	// conn = peer.connect(_id);
+	// conn.on('open', function(){
+	// 	conn.send('hi');
+	// });
+});
+
+// get the room id
+socket.on('sendRoomID', function(_room){
+	console.log("room id: " + _room.id);
+	room.roomID = _room.id;
 });
 
 var setupVideo = function (otherID) {
@@ -167,8 +173,12 @@ var setupVideo = function (otherID) {
 		call.on('stream', function(remoteStream) {
     	// Show stream in some video/canvas element.
 			console.log("SHOW THE STREAM IN A VIDEO ELEMENT");
-			$('#their-video').prop('src', URL.createObjectURL(remoteStream));
+			$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
+			var temp = "#remote-video-" + tempCount;
+			$(temp).prop('src', URL.createObjectURL(remoteStream));
 
+			// increment temp count
+			tempCount += 1;
   	});
 	}, function(err) {
 	  console.log('Failed to get local stream' ,err);
@@ -180,8 +190,10 @@ var setupVideo = function (otherID) {
 peer.on('open', function(id) {
   console.log('My peer ID is: ' + id);
 	peerID = id;
-
 	$('#yourID').append("<p>" + id + "</p>");
+
+	// show login
+	$('#login').show();
 });
 
 peer.on('connection', function(conn) {
@@ -201,7 +213,11 @@ peer.on('call', function(call) {
 
     call.on('stream', function(remoteStream) {
       // Show stream in some video/canvas element.
-			$('#their-video').prop('src', URL.createObjectURL(remoteStream));	
+			// $('#their-video').prop('src', URL.createObjectURL(remoteStream));	
+			$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
+			var temp = "#remote-video-" + tempCount;
+			$(temp).prop('src', URL.createObjectURL(remoteStream));
+
     });
   }, function(err) {
     console.log('Failed to get local stream' ,err);

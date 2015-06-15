@@ -45,7 +45,7 @@ io.on('connection', function(socket){
   console.log('a user connected');
 
   // join a room
-  socket.on("join", function(name){
+  socket.on("join", function(name, peerID){
 
     var roomID = null;
 
@@ -53,6 +53,7 @@ io.on('connection', function(socket){
     people[socket.id] = {
         "name": name,
         "room": roomID,
+        "peerID": peerID
     };
 
     io.sockets.emit("update", people[socket.id].name + "is online");
@@ -81,16 +82,30 @@ io.on('connection', function(socket){
         socket.join(socket.room); // auto join creator to the room
         room.addPerson(socket.id); // add the person to the room object
         people[socket.id].room = id; // update the room key with the id of the created room
+        socket.emit("sendRoomID", {id: id});
+
     }else{
         io.sockets.emit("update", "you have already created a room");
         }
     });
 
     // set up video callback
-    socket.on("sendVideoID", function(id){
-      console.log("RECIEVED video id");
-      console.log(id);
-      io.sockets.in(socket.room).emit("recieveVideoID", id);
+    socket.on("getPeerIDs", function(roomID){
+        console.log(rooms);
+        console.log(roomID);
+        var room = rooms[roomID];
+        console.log(room);
+        var _people = room.people;
+        
+        for(var p in _people){
+            var personID = _people[p];
+            console.log(personID);
+            // send to all except your self
+            if(socket.id != personID){
+                socket.emit('connectVideoCall', people[personID]);
+            }
+        }
+
     });
 
     // let others join the room
