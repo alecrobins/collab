@@ -58,7 +58,6 @@ $(document).ready(function(){
 	});
 
 	$('#sendVideoCall').click(function(){
-		// setupVideo(_otherID);
 		// gather the ids of all others in the group
 		socket.emit('getPeerIDs', room.roomID);
 	});
