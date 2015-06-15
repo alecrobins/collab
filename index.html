@@ -10,6 +10,7 @@
 	<link href="/assets/toastr/toastr.css" rel="stylesheet"/>
 
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 	<script type="text/javascript" src="/assets/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="/assets/bootstrap/dist/js/bootstrap.js"></script>
 	<script type="text/javascript" src="/assets/toastr/toastr.js"></script>
@@ -19,7 +20,7 @@
 	<style type="text/css">
 		.room {
 			margin-top: 40px;
-			display: none;
+			display: block;
 		}
 	</style>
 </head>
@@ -32,8 +33,14 @@
 			<div class="container">
 					<label for="username">username: </label>
 					<input type="text" id="username" name="usernmae" />
-
 					<button class="btn btn-default" id="login">log in</button>
+
+					<span id="yourID"><p><b>Your peerID is: </b></p></span>
+
+					<label for="videoID">video id: </label>
+					<input type="text" id="videoID" name="videoID" />
+					<button class="btn btn-default" id="videoIDBtn">Send Video Call</button>
+
 			</div>
 
 			<div class="container">
@@ -60,10 +67,18 @@
 	</div>
 
 	<div class="container room" style="margin-top: 20px">
+		<!-- Video area -->
+    <div id="video-container">
+      <video id="their-video" autoplay></video>
+      <video id="my-video" muted="true" autoplay></video>
+    </div>
+
 		<ul id="messages">
 
 		</ul>
 		<input type="text" id="sendMsg" /><button type="button" class="btn btn-default" id="sendMessageBtn">Send</button>
+
+		<input type="text" id="sendVideoCallID" /><button id="sendVideoCall">Send Video Call</button>
 	</div>
 
 

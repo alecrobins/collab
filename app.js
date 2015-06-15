@@ -83,6 +83,13 @@ io.on('connection', function(socket){
         }
     });
 
+    // set up video callback
+    socket.on("sendVideoID", function(id){
+      console.log("RECIEVED video id");
+      console.log(id);
+      io.sockets.in(socket.room).emit("recieveVideoID", id);
+    });
+
     // let others join the room
     socket.on("joinRoom", function(id){
         var room = rooms[id];
@@ -110,21 +117,21 @@ io.on('connection', function(socket){
                         socket.emit("sendRoomID", {id: id});
                     }
                 }
-            })
+            });
         }
     });
 
     // send a message to the group
     socket.on("send", function(msg){
-      console.log("RECEIVED");
-      console.log(msg);
-      console.log(io.sockets.adapter.rooms);
-      console.log(socket.id);
         if(io.sockets.adapter.rooms[socket.id][socket.id] != undefined){
             io.sockets.in(socket.room).emit("chat", people[socket.id], msg);
         }else{
             socket.emit("update", "Please connect to a room");
         }
+    });
+
+    socket.on("sendVideoCall", function(id){
+      io.sockets.in(socket.room).emit("recieveVideoCall", id);
     });
 
     // leave a room event
@@ -207,7 +214,7 @@ io.on('connection', function(socket){
                 io.sockets.emit("update", people[socket.id].name + "has left the server");
                 delete people[socket.io];
             }else{
-                if(people[client.id].owns != null){
+                if(people[socket.id].owns != null){
                     var room = rooms[people[socket.id].owns];
                     if(socket.id == room.owner){
                         var i = 0;

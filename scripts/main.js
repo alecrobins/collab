@@ -1,10 +1,21 @@
 // intiliaze socket io
 var socket = io();
 
+var peer = new Peer({key: 'v6uuhkcm835idx6r'});
+
 var room = {};
 var user = {};
 
 var rooms = {};
+
+var peerID = "";
+
+var conn = {};
+
+// globals
+// var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
+
 
 $(document).ready(function(){
 	console.log("working");
@@ -38,6 +49,16 @@ $(document).ready(function(){
 		$('.room').css("display", "block");
 	});
 
+	$('#videoIDBtn').click(function(){
+		var _peerID = $('#videoID').val();
+		socket.emit('sendVideoID', _peerID);
+	});
+
+	$('#sendVideoCall').click(function(){
+		var _otherID = $('#sendVideoCallID').val();
+		setupVideo(_otherID);
+	});
+
 });
 
 //Functions
@@ -67,6 +88,7 @@ var getRooms = function() {
 }
 
 // Socket Events
+//////////////////////////////////////////
 
 // update of some message
 socket.on('update', function (data) {
@@ -96,4 +118,76 @@ socket.on('chat', function(person, msg){
 	toastr.success("New message recieved");
 	var username = person.name;
 	$('#messages').append("<li><b>" + username + ": </b>" + msg + "</li>");
+});
+
+socket.on('recieveVideoID', function(_id){
+	if(_id != peerID){
+		console.log("received video id");
+		conn = peer.connect(_id);
+		conn.on('open', function(){
+			conn.send('hi');
+		});
+	}
+
+});
+
+socket.on('recieveVideoCall', function(_id){
+	if(_id != peerID){
+		console.log("received video id");
+		conn = peer.connect(_id);
+		conn.on('open', function(){
+			conn.send('hi');
+		});
+	}
+});
+
+var setupVideo = function (otherID) {
+	getUserMedia({video: true, audio: true}, function(stream) {
+
+		var call = peer.call(otherID, stream);
+
+		$('#my-video').prop('src', URL.createObjectURL(stream));
+		window.localStream = stream;
+
+		call.on('stream', function(remoteStream) {
+    	// Show stream in some video/canvas element.
+			console.log("SHOW THE STREAM IN A VIDEO ELEMENT");
+			$('#their-video').prop('src', URL.createObjectURL(remoteStream));
+
+  	});
+	}, function(err) {
+	  console.log('Failed to get local stream' ,err);
+	});
+}
+
+// Peer Events
+/////////////////////////////////////////
+peer.on('open', function(id) {
+  console.log('My peer ID is: ' + id);
+	peerID = id;
+
+	$('#yourID').append("<p>" + id + "</p>");
+});
+
+peer.on('connection', function(conn) {
+  conn.on('data', function(data){
+    // Will print 'hi!'
+    console.log(data);
+  });
+});
+
+peer.on('call', function(call) {
+  getUserMedia({video: true, audio: true}, function(stream) {
+    call.answer(stream); // Answer the call with an A/V stream.
+		$('#my-video').prop('src', URL.createObjectURL(stream));
+		window.localStream = stream;
+
+    call.on('stream', function(remoteStream) {
+      // Show stream in some video/canvas element.
+			$('#their-video').prop('src', URL.createObjectURL(remoteStream));
+			
+    });
+  }, function(err) {
+    console.log('Failed to get local stream' ,err);
+  });
 });
