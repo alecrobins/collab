@@ -13,40 +13,44 @@ var peerID = "";
 var conn = {};
 
 // globals
-// var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
-
 
 $(document).ready(function(){
 	console.log("working");
 	getRooms();
 
-	// Events
+	// hide components when user is not logged in
+	$('#roomContainer').hide();
+	$('.room').hide();
+
+	// User Events
 	$( "#createRoomBtn" ).click(function() {
 		var roomName = $('#roomName').val();
 		$('#roomName').val('');
 
 		socket.emit('createRoom', roomName);
 
-		$('.room').css("display", "block");
+		// show the rooms
+		$('.room').show();
 	});
 
 	$('#login').click(function(){
 		var username = $('#username').val();
-
 		user.username = username;
 
+		// join on login
 		socket.emit('join', username);
+
+		// show rooms / create room
+		$('#roomContainer').show();
 	});
 
 	$('#sendMessageBtn').click(function(){
 		var message = $('#sendMsg').val();
 		socket.emit('send', message);
-		$('#sendMsg').val('');
-	});
 
-	$('#roomClick').click(function(){
-		$('.room').css("display", "block");
+		// reset teh send msg
+		$('#sendMsg').val('');
 	});
 
 	$('#videoIDBtn').click(function(){
@@ -65,6 +69,8 @@ $(document).ready(function(){
 function joinRoom (id){
 	console.log(id);
 	socket.emit('joinRoom', id);
+	// show the rooms
+	$('.room').show();
 }
 
 var getRooms = function() {
@@ -79,12 +85,20 @@ var getRooms = function() {
 	   success: function(data) {
 	      console.log("SUCCESS");
 	      var rooms = data;
-	      for(var room in rooms){
-	      	$("#listOfRooms").append("<li>" + room + "</li>");
-	      }
+	      addRooms(rooms);
 	   },
 	   type: 'GET'
 	});
+}
+
+var addRooms = function(rooms){
+	// reset rooms list
+	$('#listOfRooms').empty();
+
+	for(var room in rooms){
+		var room = rooms[room];
+		$("#listOfRooms").append("<li><button id='roomClick' class='btn btn-primary' onclick='joinRoom(\"" + room.id + "\")'>" + room.name + " +</button></li>");
+	}
 }
 
 // Socket Events
@@ -99,15 +113,15 @@ socket.on('update', function (data) {
 
 // when roomList is recieved
 socket.on('roomList', function(data){
-  rooms = data.rooms;
-	console.log(rooms);
-   for(var room in rooms){
-   	$("#listOfRooms").append("<li id='roomClick' onclick='joinRoom(\"" + rooms[room].id + "\")'>" + rooms[room].name + "</li>");
-   }
+	rooms = data.rooms;
+	addRooms(rooms);
 });
 
 // when peopel are updated
 socket.on('update-people', function(people){
+	// reset people list
+	$('.people').empty();
+
 	toastr.success("New user online!");
    for(var person in people){
    	$(".people").append("<li>" + people[person].name + "</li>");
@@ -146,6 +160,7 @@ var setupVideo = function (otherID) {
 
 		var call = peer.call(otherID, stream);
 
+		// set up the local video
 		$('#my-video').prop('src', URL.createObjectURL(stream));
 		window.localStream = stream;
 
@@ -177,17 +192,19 @@ peer.on('connection', function(conn) {
 });
 
 peer.on('call', function(call) {
-  getUserMedia({video: true, audio: true}, function(stream) {
-    call.answer(stream); // Answer the call with an A/V stream.
-		$('#my-video').prop('src', URL.createObjectURL(stream));
-		window.localStream = stream;
+  	getUserMedia({video: true, audio: true}, function(stream) {
+   call.answer(stream); // Answer the call with an A/V stream.
+	
+	// set up my local stream
+	$('#my-video').prop('src', URL.createObjectURL(stream));
+	window.localStream = stream;
 
     call.on('stream', function(remoteStream) {
       // Show stream in some video/canvas element.
-			$('#their-video').prop('src', URL.createObjectURL(remoteStream));
-			
+			$('#their-video').prop('src', URL.createObjectURL(remoteStream));	
     });
   }, function(err) {
     console.log('Failed to get local stream' ,err);
+    toastr.fail('Failed to get local stream' ,err);
   });
 });

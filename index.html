@@ -28,7 +28,7 @@
 	<div class="container">
 
 		<div class="col-md-8">
-			<h1>Hello, welcome to the R/GA Collab Prototype!</h1>
+			<h1>Welcome to the R/GA Collab Prototype!</h1>
 
 			<div class="container">
 					<label for="username">username: </label>
@@ -43,19 +43,18 @@
 
 			</div>
 
-			<div class="container">
+			<div class="container" id="roomContainer">
 				<h3>
 					Join one of the following rooms:
 				</h3>
 				<ul id="listOfRooms">
 
 				</ul>
-			</div>
 
-			<div class="container">
 				<h3>Create your own room</h3>
 				<input type="text" id="roomName" /><button type="button" class="btn btn-default" id="createRoomBtn">Create room!</button>
 			</div>
+
 		</div>
 
 		<div class="col-md-4">
@@ -67,18 +66,18 @@
 	</div>
 
 	<div class="container room" style="margin-top: 20px">
-		<!-- Video area -->
-    <div id="video-container">
-      <video id="their-video" autoplay></video>
-      <video id="my-video" muted="true" autoplay></video>
-    </div>
+			<!-- Video area -->
+	    <div id="video-container">
+	      <video id="their-video" width="400px" height="300px" autoplay></video>
+	      <video id="my-video" width="100px" height="100px" muted="true" autoplay></video>
+	    </div>
 
 		<ul id="messages">
 
 		</ul>
 		<input type="text" id="sendMsg" /><button type="button" class="btn btn-default" id="sendMessageBtn">Send</button>
 
-		<input type="text" id="sendVideoCallID" /><button id="sendVideoCall">Send Video Call</button>
+		<input type="text" id="sendVideoCallID" /><button class="btn btn-default" id="sendVideoCall">Send Video Call</button>
 	</div>
 
 

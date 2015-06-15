@@ -23,6 +23,7 @@ Array.prototype.contains = function(k, callback) {
     }(0));
 };
 
+// routes for assets
 app.use('/assets', express.static(__dirname + '/node_modules/'));
 app.use('/assets', express.static(__dirname + '/scripts/'));
 app.use('/assets', express.static(__dirname + '/bower_components'));
@@ -39,6 +40,7 @@ app.get('/people', function(req, res){
     res.json(people);
 });
 
+// socket io
 io.on('connection', function(socket){
   console.log('a user connected');
 
@@ -47,6 +49,7 @@ io.on('connection', function(socket){
 
     var roomID = null;
 
+    // add a new person to the people array on join
     people[socket.id] = {
         "name": name,
         "room": roomID,
@@ -102,15 +105,18 @@ io.on('connection', function(socket){
                 if(found){
                     socket.emit("update", "You have already joined this room");
                 }else{
-                    if(people[socket.id].inroom != null){
+                    if(people[socket.id] == undefined){
+                        socket.emit("update", "You are not logged in. Log in to join a room");
+                    }
+                    else if(people[socket.id].inroom != null){
                         socket.emit("update", "You are already ina room (). Please leave it first to join another room");
                     }else{
                         room.addPerson(socket.id);
                         people[socket.id].inroom = id;
                         socket.room = room.name;
 
-                        socket.join(socket.room); // ad person to the room;
-                        user = people[socket.id];
+                        socket.join(socket.room); // add person to the room;
+                        var user = people[socket.id];
 
                         io.sockets.in(socket.room).emit("update", user.name + "has connected to " + room.name + "room ");
                         socket.emit("update", "Welcome to " + room.name);
