@@ -27,8 +27,8 @@
 	<div class="container">
 
 		<div class="col-md-8">
-			<h1>Hello, welcome to the R/GA Collab Prototype!</h1>		
-		
+			<h1>Hello, welcome to the R/GA Collab Prototype!</h1>
+
 			<div class="container">
 					<label for="username">username: </label>
 					<input type="text" id="username" name="usernmae" />
@@ -38,31 +38,34 @@
 
 			<div class="container">
 				<h3>
-					Join one of the following rooms: 
+					Join one of the following rooms:
 				</h3>
 				<ul id="listOfRooms">
-					
+
 				</ul>
-			</div>	
+			</div>
 
 			<div class="container">
-				<h3>Create your own room</h3>			
+				<h3>Create your own room</h3>
 				<input type="text" id="roomName" /><button type="button" class="btn btn-default" id="createRoomBtn">Create room!</button>
-			</div>			
-		</div>
-		
-		<div class="col-md-4">
-			<h4>People online: </h4>	
-			<ul class="people">
-				
-			</ul>
+			</div>
 		</div>
 
-	<div class="container room">
-		<ul class="messages">
-			
-		</ul>
-		<input type="text" id="sendMsg" /><buttonm type="button" class="btn btn-default" id="sendMessageBtn">Send</button>
+		<div class="col-md-4">
+			<h4>People online: </h4>
+			<ul class="people">
+
+			</ul>
+		</div>
 	</div>
+
+	<div class="container room" style="margin-top: 20px">
+		<ul id="messages">
+
+		</ul>
+		<input type="text" id="sendMsg" /><button type="button" class="btn btn-default" id="sendMessageBtn">Send</button>
+	</div>
+
+
 </body>
 </html>

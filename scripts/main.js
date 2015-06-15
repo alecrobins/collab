@@ -1,6 +1,11 @@
 // intiliaze socket io
 var socket = io();
 
+var room = {};
+var user = {};
+
+var rooms = {};
+
 $(document).ready(function(){
 	console.log("working");
 	getRooms();
@@ -17,10 +22,29 @@ $(document).ready(function(){
 
 	$('#login').click(function(){
 		var username = $('#username').val();
+
+		user.username = username;
+
 		socket.emit('join', username);
 	});
 
+	$('#sendMessageBtn').click(function(){
+		var message = $('#sendMsg').val();
+		socket.emit('send', message);
+		$('#sendMsg').val('');
+	});
+
+	$('#roomClick').click(function(){
+		$('.room').css("display", "block");
+	});
+
 });
+
+//Functions
+function joinRoom (id){
+	console.log(id);
+	socket.emit('joinRoom', id);
+}
 
 var getRooms = function() {
 	$.ajax({
@@ -53,10 +77,10 @@ socket.on('update', function (data) {
 
 // when roomList is recieved
 socket.on('roomList', function(data){
-   var rooms = data.rooms;
-	console.log(rooms);  
+  rooms = data.rooms;
+	console.log(rooms);
    for(var room in rooms){
-   	$("#listOfRooms").append("<li>" + rooms[room].name + "</li>");
+   	$("#listOfRooms").append("<li id='roomClick' onclick='joinRoom(\"" + rooms[room].id + "\")'>" + rooms[room].name + "</li>");
    }
 });
 
@@ -64,7 +88,12 @@ socket.on('roomList', function(data){
 socket.on('update-people', function(people){
 	toastr.success("New user online!");
    for(var person in people){
-   	$(".people").append("<li>" + people[person].name + "</li>");   	
+   	$(".people").append("<li>" + people[person].name + "</li>");
    }
-})
+});
 
+socket.on('chat', function(person, msg){
+	toastr.success("New message recieved");
+	var username = person.name;
+	$('#messages').append("<li><b>" + username + ": </b>" + msg + "</li>");
+});

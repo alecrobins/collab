@@ -10,7 +10,7 @@ var rooms = {};
 var clients = [];
 
 // create a contiains function for arrays
-Array.prototype.contains = function(k, callback) {  
+Array.prototype.contains = function(k, callback) {
     var self = this;
     return (function check(i) {
         if (i >= self.length) {
@@ -46,7 +46,7 @@ io.on('connection', function(socket){
   socket.on("join", function(name){
 
     var roomID = null;
-    
+
     people[socket.id] = {
         "name": name,
         "room": roomID,
@@ -86,16 +86,16 @@ io.on('connection', function(socket){
     // let others join the room
     socket.on("joinRoom", function(id){
         var room = rooms[id];
-        
+
         // check that the owner is not reentering the room
         if(socket.id == room.owner){
             socket.emit("update", "you are th owner of this room and you have already been joined");
         }else{
             room.people.contains(socket.id, function(found){
                 if(found){
-                    socket.emit(update, "You have already joined this room");
+                    socket.emit("update", "You have already joined this room");
                 }else{
-                    if(peopel[client.id].inroom != null){
+                    if(people[socket.id].inroom != null){
                         socket.emit("update", "You are already ina room (). Please leave it first to join another room");
                     }else{
                         room.addPerson(socket.id);
@@ -104,7 +104,7 @@ io.on('connection', function(socket){
 
                         socket.join(socket.room); // ad person to the room;
                         user = people[socket.id];
-                        
+
                         io.sockets.in(socket.room).emit("update", user.name + "has connected to " + room.name + "room ");
                         socket.emit("update", "Welcome to " + room.name);
                         socket.emit("sendRoomID", {id: id});
@@ -116,8 +116,12 @@ io.on('connection', function(socket){
 
     // send a message to the group
     socket.on("send", function(msg){
-        if(io.sockets.manager.roomClients[socket.id]['/'+socket.id] != undefined){
-            io.sockets.in(socket.room).emit("chat", people[client.id], msg);
+      console.log("RECEIVED");
+      console.log(msg);
+      console.log(io.sockets.adapter.rooms);
+      console.log(socket.id);
+        if(io.sockets.adapter.rooms[socket.id][socket.id] != undefined){
+            io.sockets.in(socket.room).emit("chat", people[socket.id], msg);
         }else{
             socket.emit("update", "Please connect to a room");
         }
@@ -128,13 +132,13 @@ io.on('connection', function(socket){
         var room = rooms[id];
 
         if(socket.id == room.owner){
-            var i = 0; 
-            
+            var i = 0;
+
             // remove people from the room
             while ( i < clients.length){
                 if(clients[i].id == room.people[i]){
                     peopel[clients[i].id].inroom = null;
-                    clients[i].leave(room.name);    
+                    clients[i].leave(room.name);
                 }
                 ++i;
             }
@@ -177,7 +181,7 @@ io.on('connection', function(socket){
                     while ( i < clients.length){
                         if(clients[i].id == room.people[i]){
                             peopel[clients[i].id].inroom = null;
-                            clients[i].leave(room.name);    
+                            clients[i].leave(room.name);
                         }
                         ++i;
                     }
@@ -195,7 +199,7 @@ io.on('connection', function(socket){
             }
         }
     });
-    
+
     // handle a user disconnect
     socket.on("disconnect", function(){
         if(people[socket.id]){
@@ -207,7 +211,7 @@ io.on('connection', function(socket){
                     var room = rooms[people[socket.id].owns];
                     if(socket.id == room.owner){
                         var i = 0;
-                        
+
                         while(i < clients.length) {
                           if (clients[i].id === room.people[i]) {
                             people[clients[i].id].inroom = null;
