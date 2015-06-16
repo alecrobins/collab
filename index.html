@@ -20,6 +20,11 @@
 			margin-top: 40px;
 			display: block;
 		}
+
+		#c {
+			-webkit-filter: grayscale(100%);
+			filter: grayscale(100%);
+		}
 	</style>
 </head>
 <body>
@@ -57,10 +62,16 @@
 			</ul>
 		</div>
 	</div>
-	
+
+	<div class="container">
+		<canvas id= "c" width = "400px" height = "300px">
+
+		</canvas>
+	</div>
+
 
 	<div class="container room" style="margin-top: 20px">
-			<!-- Video area -->			
+			<!-- Video area -->
 	    <div id="video-container">
 	      <video id="my-video" width="100px" height="100px" muted="true" autoplay></video>
 	    </div>

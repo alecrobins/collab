@@ -12,7 +12,12 @@ var peerID = "";
 
 var conn = {};
 
-// temp 
+var video = {};
+
+var canvas = document.getElementById('c'),
+	context = canvas.getContext('2d');
+
+// temp
 var tempCount = 0;
 
 // globals
@@ -173,16 +178,30 @@ var setupVideo = function (otherID) {
     	// Show stream in some video/canvas element.
 			console.log("SHOW THE STREAM IN A VIDEO ELEMENT");
 			$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
+
 			var temp = "#remote-video-" + tempCount;
 			$(temp).prop('src', URL.createObjectURL(remoteStream));
 
 			// increment temp count
 			tempCount += 1;
+
+			// update video variable
+			video = document.getElementById('remote-video-0');
+
+			video.addEventListener('play', function(){
+				draw(this, context, 400, 300);
+			}, false);
+
   	});
 	}, function(err) {
 	  console.log('Failed to get local stream' ,err);
 	});
 }
+
+var draw = function(video, context, width, height){
+	context.drawImage(video, 0, 0, width, height);
+	setTimeout(draw, 10, video, context, width, height);
+};
 
 // Peer Events
 /////////////////////////////////////////
@@ -205,14 +224,14 @@ peer.on('connection', function(conn) {
 peer.on('call', function(call) {
   	getUserMedia({video: true, audio: true}, function(stream) {
    call.answer(stream); // Answer the call with an A/V stream.
-	
+
 	// set up my local stream
 	$('#my-video').prop('src', URL.createObjectURL(stream));
 	window.localStream = stream;
 
     call.on('stream', function(remoteStream) {
       // Show stream in some video/canvas element.
-			// $('#their-video').prop('src', URL.createObjectURL(remoteStream));	
+			// $('#their-video').prop('src', URL.createObjectURL(remoteStream));
 			$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
 			var temp = "#remote-video-" + tempCount;
 			$(temp).prop('src', URL.createObjectURL(remoteStream));
