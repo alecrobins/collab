@@ -61,13 +61,10 @@ io.on('connection', function(socket){
     io.emit("roomList", {rooms: rooms});
     clients.push(socket); // populate the clients array with the socket object
 
-    console.log(people);
-
   });
 
   // create a room
   socket.on("createRoom", function(name){
-    console.log(people);
     // check if the person has not already created a room
     if(people[socket.id].room == null){
         // create the room id
@@ -91,15 +88,13 @@ io.on('connection', function(socket){
 
     // set up video callback
     socket.on("getPeerIDs", function(roomID){
-        console.log(rooms);
-        console.log(roomID);
+        console.log("sendingPeerIDs");
+        
         var room = rooms[roomID];
-        console.log(room);
         var _people = room.people;
         
         for(var p in _people){
             var personID = _people[p];
-            console.log(personID);
             // send to all except your self
             if(socket.id != personID){
                 socket.emit('connectVideoCall', people[personID]);

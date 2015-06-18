@@ -1,21 +1,16 @@
 // intiliaze socket io
 var socket = io();
-
+// intiliaze peer
 var peer = new Peer({key: 'v6uuhkcm835idx6r'});
+var peerID = "";
 
 var room = {};
-var user = {};
-
 var rooms = {};
-
-var peerID = "";
+var user = {};
 
 var conn = {};
 
 var video = {};
-
-var canvas = document.getElementById('c'),
-	context = canvas.getContext('2d');
 
 // temp
 var tempCount = 0;
@@ -32,7 +27,7 @@ $(document).ready(function(){
 	$('.room').hide();
 	$('#login').hide();
 
-	// User Events
+	// Create a room once user is logged in  
 	$( "#createRoomBtn" ).click(function() {
 		var roomName = $('#roomName').val();
 		$('#roomName').val('');
@@ -86,9 +81,8 @@ var getRooms = function() {
 	   error: function() {
 	     console.log("error");
 	   },
-	   success: function(data) {
-	      console.log("SUCCESS");
-	      var rooms = data;
+	   success: function(rooms) {
+	      console.log("rooms recieved");
 	      addRooms(rooms);
 	   },
 	   type: 'GET'
@@ -148,7 +142,6 @@ socket.on('recieveVideoID', function(_id){
 	}
 });
 
-
 socket.on('connectVideoCall', function(person){
 	console.log("received video id");
 	console.log(person);
@@ -175,27 +168,42 @@ var setupVideo = function (otherID) {
 		window.localStream = stream;
 
 		call.on('stream', function(remoteStream) {
-    	// Show stream in some video/canvas element.
-			console.log("SHOW THE STREAM IN A VIDEO ELEMENT");
-			$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
-
-			var temp = "#remote-video-" + tempCount;
-			$(temp).prop('src', URL.createObjectURL(remoteStream));
-
-			// increment temp count
-			tempCount += 1;
-
-			// update video variable
-			video = document.getElementById('remote-video-0');
-
-			video.addEventListener('play', function(){
-				draw(this, context, 400, 300);
-			}, false);
-
-  	});
+    		setupStream(remoteStream);
+  		});
 	}, function(err) {
 	  console.log('Failed to get local stream' ,err);
 	});
+}
+
+var setupStream = function(stream){
+	// Show stream in some video/canvas element.
+	$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" hidden autoplay></video>');
+
+	var temp = "#remote-video-" + tempCount;
+	$(temp).prop('src', URL.createObjectURL(stream));
+
+	// increment temp count
+	tempCount += 1;
+
+	setupCanvas(temp);
+}
+
+var setupCanvas = function(canvasID){
+		// 	<canvas id= "c" width = "400px" height = "300px">
+		// </canvas>
+		// 
+	$('#video-container').prepend('<canvas id="'+canvasID+'" width="400px" height="300px"></canvas>');
+	var canvas = document.getElementById(canvasID),
+	context = canvas.getContext('2d');
+
+		// update video variable
+	// video = document.getElementById('remote-video-0');
+	video = $(canvasID).get(0);
+
+	video.addEventListener('play', function(){
+		draw(this, context, 400, 300);
+	}, false);
+
 }
 
 var draw = function(video, context, width, height){
@@ -208,8 +216,6 @@ var draw = function(video, context, width, height){
 peer.on('open', function(id) {
   console.log('My peer ID is: ' + id);
 	peerID = id;
-	$('#yourID').append("<p>" + id + "</p>");
-
 	// show login
 	$('#login').show();
 });
@@ -231,10 +237,12 @@ peer.on('call', function(call) {
 
     call.on('stream', function(remoteStream) {
       // Show stream in some video/canvas element.
-			// $('#their-video').prop('src', URL.createObjectURL(remoteStream));
-			$('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
-			var temp = "#remote-video-" + tempCount;
-			$(temp).prop('src', URL.createObjectURL(remoteStream));
+		// $('#their-video').prop('src', URL.createObjectURL(remoteStream));
+		// $('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
+		// var temp = "#remote-video-" + tempCount;
+		// $(temp).prop('src', URL.createObjectURL(remoteStream));
+		// 
+		setupStream(remoteStream);
 
     });
   }, function(err) {
