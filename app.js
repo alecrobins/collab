@@ -79,6 +79,7 @@ io.on('connection', function(socket){
         socket.join(socket.room); // auto join creator to the room
         room.addPerson(socket.id); // add the person to the room object
         people[socket.id].room = id; // update the room key with the id of the created room
+        people[socket.id].inroom = id;
         socket.emit("sendRoomID", {id: id});
 
     }else{
@@ -89,7 +90,7 @@ io.on('connection', function(socket){
     // set up video callback
     socket.on("getPeerIDs", function(roomID){
         console.log("sendingPeerIDs");
-        
+
         var room = rooms[roomID];
         var _people = room.people;
         
@@ -131,6 +132,14 @@ io.on('connection', function(socket){
                         io.sockets.in(socket.room).emit("update", user.name + "has connected to " + room.name + "room ");
                         socket.emit("update", "Welcome to " + room.name);
                         socket.emit("sendRoomID", {id: id});
+
+                        // check if there are any canvas data
+                        if(room.canvasData !== null){
+                            socket.emit("recieveCanvasData", 
+                                room.canvasData.currentClickX,
+                                room.canvasData.currentClickY,
+                                room.canvasData.currentClickDrag);
+                        }
                     }
                 }
             });
@@ -160,7 +169,7 @@ io.on('connection', function(socket){
             // remove people from the room
             while ( i < clients.length){
                 if(clients[i].id == room.people[i]){
-                    peopel[clients[i].id].inroom = null;
+                    people[clients[i].id].inroom = null;
                     clients[i].leave(room.name);
                 }
                 ++i;
@@ -168,7 +177,7 @@ io.on('connection', function(socket){
 
             delete rooms[id];
 
-            peopel[room.owner].owns = null; // reset the owns object to null so a new room can be added
+            people[room.owner].owns = null; // reset the owns object to null so a new room can be added
 
             // emit broadcast of new roomList
             io.sockets.emit("roomList", {rooms: rooms});
@@ -203,7 +212,7 @@ io.on('connection', function(socket){
                     // remove people from the room
                     while ( i < clients.length){
                         if(clients[i].id == room.people[i]){
-                            peopel[clients[i].id].inroom = null;
+                            people[clients[i].id].inroom = null;
                             clients[i].leave(room.name);
                         }
                         ++i;
@@ -211,7 +220,7 @@ io.on('connection', function(socket){
 
                     delete rooms[id];
 
-                    peopel[room.owner].owns = null; // reset the owns object to null so a new room can be added
+                    people[room.owner].owns = null; // reset the owns object to null so a new room can be added
 
                     // emit broadcast of new roomList
                     io.sockets.emit("roomList", {rooms: rooms});
@@ -255,6 +264,19 @@ io.on('connection', function(socket){
 
             }
         }
+    });
+
+    // handle the sending of canvas data
+    socket.on("sendCanvasData", function(clickX, clickY, clickDrag){
+        var room = rooms[people[socket.id].inroom];
+
+        room.canvasData = {
+            "currentClickX": clickX,
+            "currentClickY": clickY,
+            "currentClickDrag": clickDrag
+        };
+
+        socket.broadcast.emit("recieveCanvasData", clickX, clickY, clickDrag);
     });
 
 });

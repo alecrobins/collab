@@ -158,6 +158,14 @@ socket.on('sendRoomID', function(_room){
 	room.roomID = _room.id;
 });
 
+// recieve canvas data
+socket.on('recieveCanvasData', function(_clickX, _clickY, _clickDrag){
+	clickX = _clickX;
+	clickY = _clickY;
+	clickDrag = _clickDrag;
+	redraw();
+});
+
 var setupVideo = function (otherID) {
 	getUserMedia({video: true, audio: true}, function(stream) {
 
@@ -250,3 +258,80 @@ peer.on('call', function(call) {
     toastr.fail('Failed to get local stream' ,err);
   });
 });
+
+/**
+ * White board control
+ */
+var $_whiteboard = $(".whiteboard");
+var $_whiteboardWidth = $_whiteboard.width();
+var $_whiteboardHeight = $_whiteboard.height();
+var $_whiteboardElement = $_whiteboard.get(0);
+var $_whiteboardContext = $_whiteboardElement.getContext("2d");
+var paint = false;
+
+// click arrays
+var clickX = new Array();
+var clickY = new Array();
+var clickDrag = new Array();
+
+// White board events
+$_whiteboard.mousedown(function(e){
+  var mouseX = e.pageX - this.offsetLeft;
+  var mouseY = e.pageY - this.offsetTop;
+
+  paint = true;
+  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+  redraw();
+});
+
+$_whiteboard.mousemove(function(e){
+	var mouseX = e.pageX - this.offsetLeft;
+  	var mouseY = e.pageY - this.offsetTop;
+
+	if(paint){
+		addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+    	redraw();
+	}
+});
+
+$_whiteboard.mouseup(function(e){
+	paint = false;
+});
+
+$_whiteboard.mouseleave(function(e){
+	paint = false;
+});
+
+var addClick = function (x, y, dragging)
+{
+	clickX.push(x);
+	clickY.push(y);
+	clickDrag.push(dragging);
+
+	socket.emit('sendCanvasData', clickX, clickY, clickDrag);
+
+};
+
+var redraw = function (){
+  $_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
+  
+  $_whiteboardContext.strokeStyle = "#df4b26";
+  $_whiteboardContext.lineJoin = "round";
+  $_whiteboardContext.lineWidth = 5;
+			
+  for(var i=0; i < clickX.length; i++) {		
+    $_whiteboardContext.beginPath();
+    if(clickDrag[i] && i){
+      $_whiteboardContext.moveTo(clickX[i-1], clickY[i-1]);
+     }else{
+       $_whiteboardContext.moveTo(clickX[i]-1, clickY[i]);
+     }
+     $_whiteboardContext.lineTo(clickX[i], clickY[i]);
+     $_whiteboardContext.closePath();
+     $_whiteboardContext.stroke();
+  }
+}
+
+
+
+

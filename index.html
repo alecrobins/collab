@@ -25,6 +25,10 @@
 			-webkit-filter: grayscale(100%);
 			filter: grayscale(100%);
 		}
+
+		.whiteboard {
+			border: solid 1px blue;
+		}
 	</style>
 	
 </head>
@@ -68,6 +72,8 @@
 
 
 	<div class="container room" style="margin-top: 20px">
+		<!-- white board area -->
+		<canvas class="whiteboard" width="600px" height="600px"></canvas>
 			<!-- Video area -->
 	    <div id="video-container">
 	      <video id="my-video" width="100px" height="100px" muted="true" autoplay></video>

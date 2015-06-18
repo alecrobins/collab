@@ -4,6 +4,7 @@ function Room(name, id, owner) {
   this.owner = owner;
   this.people = [];
   this.status = "available";
+  this.canvasData = null;
 };
 
 Room.prototype.addPerson = function(personID) {  
