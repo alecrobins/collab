@@ -138,7 +138,8 @@ io.on('connection', function(socket){
                             socket.emit("recieveCanvasData", 
                                 room.canvasData.currentClickX,
                                 room.canvasData.currentClickY,
-                                room.canvasData.currentClickDrag);
+                                room.canvasData.currentClickDrag,
+                                room.canvasData.currentClickColor);
                         }
                     }
                 }
@@ -267,16 +268,18 @@ io.on('connection', function(socket){
     });
 
     // handle the sending of canvas data
-    socket.on("sendCanvasData", function(clickX, clickY, clickDrag){
+    socket.on("sendCanvasData", function(clickX, clickY, clickDrag, clickColor){
         var room = rooms[people[socket.id].inroom];
+
 
         room.canvasData = {
             "currentClickX": clickX,
             "currentClickY": clickY,
-            "currentClickDrag": clickDrag
+            "currentClickDrag": clickDrag,
+            "currentClickColor": clickColor
         };
 
-        socket.broadcast.emit("recieveCanvasData", clickX, clickY, clickDrag);
+        socket.broadcast.to(socket.room).emit("recieveCanvasData", clickX, clickY, clickDrag, clickColor);
     });
 
 });

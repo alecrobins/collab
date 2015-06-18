@@ -15,6 +15,24 @@ var video = {};
 // temp
 var tempCount = 0;
 
+/**
+ * White board control
+ */
+var $_whiteboard = $(".whiteboard");
+var $_whiteboardWidth = $_whiteboard.width();
+var $_whiteboardHeight = $_whiteboard.height();
+var $_whiteboardElement = $_whiteboard.get(0);
+var $_whiteboardContext = $_whiteboardElement.getContext("2d");
+
+var paint = false;
+var color = "black"; 
+
+// click arrays
+var clickX = new Array();
+var clickY = new Array();
+var clickDrag = new Array();
+var clickColor = new Array();
+
 // globals
 var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
 
@@ -159,10 +177,14 @@ socket.on('sendRoomID', function(_room){
 });
 
 // recieve canvas data
-socket.on('recieveCanvasData', function(_clickX, _clickY, _clickDrag){
+socket.on('recieveCanvasData', function(_clickX, _clickY, _clickDrag, _clickColor){
 	clickX = _clickX;
 	clickY = _clickY;
 	clickDrag = _clickDrag;
+	clickColor = _clickColor;
+
+	console.log(_clickColor);
+
 	redraw();
 });
 
@@ -259,22 +281,9 @@ peer.on('call', function(call) {
   });
 });
 
-/**
- * White board control
- */
-var $_whiteboard = $(".whiteboard");
-var $_whiteboardWidth = $_whiteboard.width();
-var $_whiteboardHeight = $_whiteboard.height();
-var $_whiteboardElement = $_whiteboard.get(0);
-var $_whiteboardContext = $_whiteboardElement.getContext("2d");
-var paint = false;
-
-// click arrays
-var clickX = new Array();
-var clickY = new Array();
-var clickDrag = new Array();
-
 // White board events
+// ////////////////////////////
+
 $_whiteboard.mousedown(function(e){
   var mouseX = e.pageX - this.offsetLeft;
   var mouseY = e.pageY - this.offsetTop;
@@ -307,15 +316,15 @@ var addClick = function (x, y, dragging)
 	clickX.push(x);
 	clickY.push(y);
 	clickDrag.push(dragging);
+	clickColor.push(color);
 
-	socket.emit('sendCanvasData', clickX, clickY, clickDrag);
+	socket.emit('sendCanvasData', clickX, clickY, clickDrag, clickColor);
 
 };
-
 var redraw = function (){
   $_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
   
-  $_whiteboardContext.strokeStyle = "#df4b26";
+
   $_whiteboardContext.lineJoin = "round";
   $_whiteboardContext.lineWidth = 5;
 			
@@ -328,10 +337,12 @@ var redraw = function (){
      }
      $_whiteboardContext.lineTo(clickX[i], clickY[i]);
      $_whiteboardContext.closePath();
+     $_whiteboardContext.strokeStyle = clickColor[i];
      $_whiteboardContext.stroke();
   }
-}
+};
 
-
-
+var changeColor = function (_color){
+	color = _color;
+};
 
