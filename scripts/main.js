@@ -49,7 +49,7 @@ $(document).ready(function(){
 	$( "#createRoomBtn" ).click(function() {
 		var roomName = $('#roomName').val();
 		$('#roomName').val('');
-
+		console.log(socket);
 		socket.emit('createRoom', roomName);
 
 		// show the rooms
@@ -321,9 +321,8 @@ var addClick = function (x, y, dragging)
 	socket.emit('sendCanvasData', clickX, clickY, clickDrag, clickColor);
 
 };
-var redraw = function (){
+var redraw = function (){  
   $_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
-  
 
   $_whiteboardContext.lineJoin = "round";
   $_whiteboardContext.lineWidth = 5;
@@ -340,9 +339,25 @@ var redraw = function (){
      $_whiteboardContext.strokeStyle = clickColor[i];
      $_whiteboardContext.stroke();
   }
+
 };
 
 var changeColor = function (_color){
 	color = _color;
 };
+
+var emptyPoints = function () {
+	clickX = new Array();
+	clickY = new Array();
+	clickDrag = new Array();
+	clickColor = new Array();
+};
+
+var clearScreen = function () {
+  	$_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
+  	emptyPoints();
+	redraw();
+	socket.emit('sendCanvasData', clickX, clickY, clickDrag, clickColor);
+
+}
 
