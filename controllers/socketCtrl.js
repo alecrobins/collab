@@ -1,10 +1,8 @@
 /**
  * Control socket events by returning
  * the proper handler of events
- * 
  */
-var locals = require('../models/locals.js'),
-    uuid = require('node-uuid'),
+var uuid = require('node-uuid'),
     Room = require('../models/room');
 
 // create a contiains function for arrays
@@ -21,12 +19,6 @@ Array.prototype.contains = function(k, callback) {
     }(0));
 };
 
-/**
- * [join description]
- * @param  {[type]} io     [description]
- * @param  {[type]} socket [description]
- * @return {[type]}        [description]
- */
 module.exports.join = function(io, socket){
     return function (name, peerID){
         var roomID = null;

@@ -1,0 +1,39 @@
+<!-- partials/_header.ejs -->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RGA Collab</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+	<link rel="stylesheet" type="text/css" href="/assets/bootstrap/dist/css/bootstrap.css" />
+	<link href="/assets/toastr/toastr.css" rel="stylesheet"/>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+	<script type="text/javascript" src="/assets/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="/assets/bootstrap/dist/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/assets/toastr/toastr.js"></script>
+	
+	<script src="/assets/requirejs/require.js" data-main="app"></script>
+
+	<style type="text/css">
+		.room {
+			margin-top: 40px;
+			display: block;
+		}
+
+		#c {
+			-webkit-filter: grayscale(100%);
+			filter: grayscale(100%);
+		}
+
+		.whiteboard {
+			border: solid 1px blue;
+		}
+	</style>
+	
+</head>
+<body>

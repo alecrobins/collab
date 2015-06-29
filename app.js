@@ -4,17 +4,21 @@ var express = require('express'),
     io = require('socket.io')(http),
     routes = require('./routes.js'),
     socketCtrl = require('./controllers/socketCtrl');
-    locals = require('./models/locals.js'),
+    globals = require('./models/globals'),
 
-    people = locals.people,
-    rooms = locals.rooms,
-    clients = locals.clients;
+    // variables used on callback functions 
+    // for socket IO
+    people = globals.people,
+    rooms = globals.rooms,
+    clients = globals.clients;
 
-app.use(express.static(__dirname + '/public'));
+// set the view engine to ejs
+app.set('view engine', 'ejs');
 
+app.use(express.static(__dirname + '/views'));
 // routes for assets
 app.use('/assets', express.static(__dirname + '/node_modules/'));
-app.use('/assets', express.static(__dirname + '/scripts/'));
+app.use('/assets', express.static(__dirname + '/views/scripts/'));
 app.use('/assets', express.static(__dirname + '/bower_components'));
 
 // set the routes

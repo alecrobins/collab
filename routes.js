@@ -1,12 +1,12 @@
-var locals = require('./models/locals');
+var globals = require('./models/globals');
 
 module.exports.set = function(app){
 	app.get('/', function(req, res){
-	  res.sendFile(__dirname + '/index.html');
+	  res.render('index');
 	});
 
 	app.get('/rooms', function(req, res){
-	    res.json(locals.rooms);
+	    res.json(globals.rooms);
 	});
 
 	app.get('/people', function(req, res){
