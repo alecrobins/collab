@@ -37,7 +37,9 @@ var socketDispatcher = (function(){
 		});
 
 		socket.on('connectVideoCall', function(person){
-			peerController.setupVideo(person.peerID);
+			if(person !== null){
+				peerController.setupVideo(person.peerID);
+			}
 		});
 
 		// get the room id
@@ -51,7 +53,6 @@ var socketDispatcher = (function(){
 		});
 		
 	}
-	
 
 	// public
 	return{

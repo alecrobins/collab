@@ -13,7 +13,7 @@ var peopleController = (function(){
 	var setPeople = function(_people){
 		toastr.success("New user online!");
 		
-		var people = people;
+		var people = _people;
 
 		// reset people list
 		$('.people').empty();

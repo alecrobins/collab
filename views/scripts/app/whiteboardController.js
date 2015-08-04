@@ -11,6 +11,26 @@ var whiteboardController = (function(){
 	// data for drawing
 	var clickX, clickY, clickDrag, clickColor;
 
+	var whiteboardToolSelector = function($el){
+
+		var toolType = $el.data("tool");
+
+		if(toolType === "clear"){
+			console.log("CLEAR");
+			clearScreen();
+		}
+
+		if(toolType === "erase"){
+			changeColor("white");
+		}
+
+		if(toolType === "color"){
+			var newColor = $el.data("color");
+			changeColor(newColor);
+		}
+
+	};
+
 	/**
 	 * Redraw the canvas
 	 * 
@@ -23,16 +43,20 @@ var whiteboardController = (function(){
 	  $_whiteboardContext.lineWidth = 5;
 				
 	  for(var i=0; i < clickX.length; i++) {		
+	    
 	    $_whiteboardContext.beginPath();
+	    
 	    if(clickDrag[i] && i){
-	      $_whiteboardContext.moveTo(clickX[i-1], clickY[i-1]);
-	     }else{
-	       $_whiteboardContext.moveTo(clickX[i]-1, clickY[i]);
-	     }
-	     $_whiteboardContext.lineTo(clickX[i], clickY[i]);
-	     $_whiteboardContext.closePath();
-	     $_whiteboardContext.strokeStyle = clickColor[i];
-	     $_whiteboardContext.stroke();
+	    		$_whiteboardContext.moveTo(clickX[i-1], clickY[i-1]);
+	    }else{
+	      	$_whiteboardContext.moveTo(clickX[i]-1, clickY[i]);
+	    }
+	    
+	    $_whiteboardContext.lineTo(clickX[i], clickY[i]);
+	    $_whiteboardContext.closePath();
+	    $_whiteboardContext.strokeStyle = clickColor[i];
+	    $_whiteboardContext.stroke();
+
 	  }
 	};
 
@@ -65,6 +89,10 @@ var whiteboardController = (function(){
 			paint = false;
 		});
 
+		$(".whiteboard-tool").on("click", function(e){
+			whiteboardToolSelector($(this));
+		})
+
 	}
 
 	//Whiteboard Helper Methods
@@ -88,9 +116,11 @@ var whiteboardController = (function(){
 		clickY = new Array();
 		clickDrag = new Array();
 		clickColor = new Array();
+		console.log("EMPYT POINTS");
 	};
 
 	var clearScreen = function () {
+		console.log("CLEARing . . ");
 	  	$_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
 	  	emptyPoints();
 		redraw();
@@ -118,9 +148,9 @@ var whiteboardController = (function(){
 			setEvents();
 		},
 
-		redrawCanvas: function(_clickX, _clickX, _clickDrag, _clickColor){
+		redrawCanvas: function(_clickX, _clickY, _clickDrag, _clickColor){
 			clickX = _clickX;
-			clickY = _clickX;
+			clickY = _clickY;
 			clickDrag = _clickDrag;
 			clickColor = _clickColor;
 

@@ -16,6 +16,7 @@ var peerController = (function(){
 			call.on('stream', function(remoteStream) {
 	    		setupStream(remoteStream);
 	  		});
+	  		
 		}, function(err) {
 		  console.log('Failed to get local stream' ,err);
 		});

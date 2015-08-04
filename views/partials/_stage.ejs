@@ -1,11 +1,11 @@
 <!-- partials/_stage.ejs -->
 
 <div class="container room" style="margin-top: 20px">
-	<button class="btn btn-default" onclick="clearScreen()">Clear Screen</button>
-	<button class="btn btn-default" onclick="changeColor('white')">Erase</button>
-	<button class="btn btn-danger" onclick="changeColor('red')">Red</button>
-	<button class="btn btn-success" onclick="changeColor('green')">Green</button>
-	<button class="btn btn-primary" onclick="changeColor('blue')">Blue</button>
+	<button class="btn btn-default whiteboard-tool" data-tool="clear">Clear Screen</button>
+	<button class="btn btn-default whiteboard-tool" data-tool="erase">Erase</button>
+	<button class="btn btn-danger whiteboard-tool" data-tool="color" data-color="red">Red</button>
+	<button class="btn btn-success whiteboard-tool" data-tool="color" data-color="green">Green</button>
+	<button class="btn btn-primary whiteboard-tool" data-tool="color" data-color="blue">Blue</button>
 
 	<!-- white board area -->
 	<canvas class="whiteboard" width="600px" height="600px"></canvas>
@@ -14,10 +14,10 @@
       <video id="my-video" width="100px" height="100px" muted="true" autoplay></video>
     </div>
 
-	<ul id="messages">
-
-	</ul>
+	<ul id="messages"></ul>
+	
 	<input type="text" id="sendMsg" /><button type="button" class="btn btn-default" id="sendMessageBtn">Send</button>
 
 	<button class="btn btn-success" id="sendVideoCall">Send Video Call</button>
+
 </div>
