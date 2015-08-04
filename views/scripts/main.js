@@ -37,7 +37,6 @@ var clickColor = new Array();
 var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
 
 $(document).ready(function(){
-	console.log("working");
 	getRooms();
 
 	// hide components when user is not logged in
@@ -266,15 +265,9 @@ peer.on('call', function(call) {
 	window.localStream = stream;
 
     call.on('stream', function(remoteStream) {
-      // Show stream in some video/canvas element.
-		// $('#their-video').prop('src', URL.createObjectURL(remoteStream));
-		// $('#video-container').prepend('<video class="their-video" id="remote-video-'+tempCount+'" width="400px" height="300px" autoplay></video>');
-		// var temp = "#remote-video-" + tempCount;
-		// $(temp).prop('src', URL.createObjectURL(remoteStream));
-		// 
 		setupStream(remoteStream);
-
     });
+    
   }, function(err) {
     console.log('Failed to get local stream' ,err);
     toastr.fail('Failed to get local stream' ,err);
