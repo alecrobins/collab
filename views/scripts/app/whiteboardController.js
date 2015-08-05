@@ -35,28 +35,28 @@ var whiteboardController = (function(){
 	 * 
 	 */
 	var redraw = function (){  
+	  	$_whiteboardContext.clearRect(0, 0, $_whiteboard.width(), $_whiteboard.height()); // Clears the canvas
 
-	  $_whiteboardContext.clearRect(0, 0, $_whiteboard.width(), $_whiteboard.height()); // Clears the canvas
-
-	  $_whiteboardContext.lineJoin = "round";
-	  $_whiteboardContext.lineWidth = 5;
+		// TODO: will eventually be settings
+		$_whiteboardContext.lineJoin = "round";
+		$_whiteboardContext.lineWidth = 5;
 				
-	  for(var i=0; i < clickX.length; i++) {		
-	    
-	    $_whiteboardContext.beginPath();
-	    
-	    if(clickDrag[i] && i){
-	    		$_whiteboardContext.moveTo(clickX[i-1], clickY[i-1]);
-	    }else{
-	      	$_whiteboardContext.moveTo(clickX[i]-1, clickY[i]);
-	    }
-	    
-	    $_whiteboardContext.lineTo(clickX[i], clickY[i]);
-	    $_whiteboardContext.closePath();
-	    $_whiteboardContext.strokeStyle = clickColor[i];
-	    $_whiteboardContext.stroke();
+		for(var i=0; i < clickX.length; i++) {		
 
-	  }
+			$_whiteboardContext.beginPath();
+
+			if(clickDrag[i] && i){
+				$_whiteboardContext.moveTo(clickX[i-1], clickY[i-1]);
+			}else{
+				$_whiteboardContext.moveTo(clickX[i]-1, clickY[i]);
+			}
+
+			$_whiteboardContext.lineTo(clickX[i], clickY[i]);
+			$_whiteboardContext.closePath();
+			$_whiteboardContext.strokeStyle = clickColor[i];
+			$_whiteboardContext.stroke();
+
+		}
 	};
 
 	var setEvents = function(){
@@ -120,6 +120,7 @@ var whiteboardController = (function(){
 
 	var clearScreen = function () {
 	  	$_whiteboardContext.clearRect(0, 0, $_whiteboard.width(), $_whiteboard.height()); // Clears the canvas
+	  	
 	  	clickX = new Array();
 		clickY = new Array();
 		clickDrag = new Array();
@@ -155,7 +156,7 @@ var whiteboardController = (function(){
 			clickDrag = _clickDrag;
 			clickColor = _clickColor;
 
-			redraw();
+			redraw(clickX, clickY, clickDrag, clickColor);
 		}
 		
 	}
