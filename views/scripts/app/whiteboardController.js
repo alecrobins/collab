@@ -3,7 +3,7 @@ var socket = require('./socket');
 var whiteboardController = (function(){
 
 	// whiteboard variables
-	var $_whiteboard, $_whiteboardWidth, $_whiteboardHeight, $_whiteboardContext;
+	var $_whiteboard, $_whiteboardContext;
 
 	// variables for painting
 	var paint, color;
@@ -16,7 +16,6 @@ var whiteboardController = (function(){
 		var toolType = $el.data("tool");
 
 		if(toolType === "clear"){
-			console.log("CLEAR");
 			clearScreen();
 		}
 
@@ -37,7 +36,7 @@ var whiteboardController = (function(){
 	 */
 	var redraw = function (){  
 
-	  $_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
+	  $_whiteboardContext.clearRect(0, 0, $_whiteboard.width(), $_whiteboard.height()); // Clears the canvas
 
 	  $_whiteboardContext.lineJoin = "round";
 	  $_whiteboardContext.lineWidth = 5;
@@ -116,14 +115,18 @@ var whiteboardController = (function(){
 		clickY = new Array();
 		clickDrag = new Array();
 		clickColor = new Array();
-		console.log("EMPYT POINTS");
+		console.log("EMPYT POINTS"); 
 	};
 
 	var clearScreen = function () {
-		console.log("CLEARing . . ");
-	  	$_whiteboardContext.clearRect(0, 0, $_whiteboardWidth, $_whiteboardHeight); // Clears the canvas
-	  	emptyPoints();
+	  	$_whiteboardContext.clearRect(0, 0, $_whiteboard.width(), $_whiteboard.height()); // Clears the canvas
+	  	clickX = new Array();
+		clickY = new Array();
+		clickDrag = new Array();
+		clickColor = new Array();
+
 		redraw();
+
 		socket.emit('sendCanvasData', clickX, clickY, clickDrag, clickColor);
 	}
 
@@ -132,8 +135,6 @@ var whiteboardController = (function(){
 		
 		init: function(){
 			$_whiteboard = $(".whiteboard");
-			$_whiteboardWidth = $_whiteboard.width();
-			$_whiteboardHeight = $_whiteboard.height();
 			$_whiteboardElement = $_whiteboard.get(0);
 			$_whiteboardContext = $_whiteboardElement.getContext("2d");
 

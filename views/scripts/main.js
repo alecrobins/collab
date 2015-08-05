@@ -6,7 +6,7 @@ var peerController = require('./app/peerController'),
 	videoController = require('./app/videoController'),
 	whiteboardController = require('./app/whiteboardController');
 
-$(window).on("load", function(){
+$(document).ready(function(){
 
 	console.log("initializing the app . . . ");
 
