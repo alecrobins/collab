@@ -89,6 +89,7 @@ var peerController = (function(){
 		    console.log('Failed to get local stream' ,err);
 		    toastr.fail('Failed to get local stream' ,err);
 		  });
+
 		});
 
 	}
@@ -122,6 +123,7 @@ var peerController = (function(){
 			conn.on('open', function(){
 				conn.send('hi');
 			});
+			conn.send('test');
 		}
 	}
 
